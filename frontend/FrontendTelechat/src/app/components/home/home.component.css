@@ -77,13 +77,14 @@
 .container > .messages .chat-area > :first-child {
     margin-top: auto;
 }
-.container > .messages .chat-area .chat-bubble-container {
+.chat-bubble-container {
     display: flex;
     width: 100%;
     justify-content: flex-start;
 }
-.container > .messages .chat-area .chat-bubble-container > .chat-bubble {
-    background: #fa89f2;
+.chat-bubble-container > .chat-bubble {
+    background:#b2b6d3;;
+    /* gray; */
     padding-top: 8px;
     padding-bottom: 18px;
     padding-left: 8px;
@@ -100,11 +101,12 @@
     font-size: 0.7rem;
     color: rgba(0, 0, 0, 0.6);
 }
-.container > .messages .chat-area .chat-bubble-container.sender {
+.chat-bubble-container.sender {
     justify-content: flex-end;
 }
-.container > .messages .chat-area .chat-bubble-container.sender > .chat-bubble {
-    background: #C5CAE9;
+ .chat-bubble-container.sender > .chat-bubble {
+    background:#fa89f2;
+    /* #C5CAE9; */
 }
 .container > .messages .input-area {
     padding-top: 16px;

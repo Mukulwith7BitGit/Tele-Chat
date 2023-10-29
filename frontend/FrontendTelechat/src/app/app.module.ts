@@ -7,6 +7,9 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDialogModule } from '@angular/material/dialog';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -42,6 +45,9 @@ import { CommonModule } from '@angular/common';
     MatAutocompleteModule,
     MatListModule,
     MatIconModule,
+    MatMenuModule,
+    MatDialogModule,
+    
     CommonModule
   ],
   providers: [],

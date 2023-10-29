@@ -15,11 +15,11 @@
                     </mat-option>
             </mat-autocomplete>
         </div>
-        <mat-selection-list class="names-list"
+        <mat-selection-list class="names-list" 
         [multiple]="false" >
         <!-- [formControl]="" -->
             <mat-divider ></mat-divider>
-            <mat-list-option  *ngFor="let userChat of allButCurr" (click)="onOptionSelection(userChat)" >
+            <mat-list-option  *ngFor="let userChat of allButCurr" [value]="userChat" (click)="onOptionSelection(userChat)" >
                 <p mat-line class="chat-title">
                     <span class="chat-name">
                         {{userChat.name}}
@@ -28,9 +28,9 @@
                         {{currentDate | date: 'dd/MM/yyyy'}}
                     </span>
                 </p>
-                <p mat-line class="chat-ht">
-                    <!-- {{"testing"}} -->
-                </p>
+                <!-- <p mat-line class="chat-ht">
+                    {{"testing"}} 
+                </p> -->
                 <mat-divider></mat-divider>
             </mat-list-option>
         </mat-selection-list>
@@ -55,22 +55,29 @@
         </ng-template>
         <mat-divider></mat-divider>
         <div class="chat-area">
-            <!-- <ng-container *ngIf=""> -->
+            <!-- <ng-container > -->
            
-                <div *ngFor="let message of userMessages" class="chat-bubble-container">
-                    <div class="chat-bubble">
-                        {{message}}
+                <div *ngFor="let sentMsg of completeChatHistory" class="chat-bubble-container" [ngClass]="{'sender': sentMsg.messages[0].sender === currentUser._id}">
+                    <div class="chat-bubble" *ngIf="sentMsg._id!==chatDivToDeleteId" >
+                        {{sentMsg.messages[0].text}}
                         <span class="chat-date">
                             {{currentDate | date: 'dd/MM/yyyy'}}
                         </span>
                     </div>
                     
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon button with a horizontal three dot icon" *ngIf="sentMsg._id!==chatDivToDeleteId">
+                        <mat-icon>more_horiz</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                          <button mat-menu-item (click)="openInputPopup(sentMsg._id)">Edit</button>
+                          <button mat-menu-item (click)="onDeleteMessage(sentMsg._id)">Delete</button>
+                      </mat-menu>
                 </div>
             <!-- </ng-container> -->
         </div>
         <div class="input-area">
             <mat-form-field  appearance="outline">
-                <input [(ngModel)]="textMessage" matInput placeholder="Jot something down"/>
+                <input [(ngModel)]="textMessage" matInput placeholder="Jot something down" (keydown.enter)="sendMessage()"/>
                 <button mat-icon-button  matSuffix (click)="sendMessage()">
                     <mat-icon>send</mat-icon>
                 </button>
