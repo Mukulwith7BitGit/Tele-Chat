@@ -1,0 +1,80 @@
+<div class="container purple-back">
+    <div class="chat-list mat-elevation-z5">
+        <div class="search-input" *ngIf="users?.length">
+            <mat-form-field>
+                <input  matInput 
+                placeholder="Search for users..." 
+                [matAutocomplete]="auto"
+                [formControl]="searchControl"
+                >
+                    
+            </mat-form-field>
+            <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let user of allButCurr" [value]="user.name" >
+                        {{ user.name}}
+                    </mat-option>
+            </mat-autocomplete>
+        </div>
+        <mat-selection-list class="names-list"
+        [multiple]="false" >
+        <!-- [formControl]="" -->
+            <mat-divider ></mat-divider>
+            <mat-list-option  *ngFor="let userChat of allButCurr" (click)="onOptionSelection(userChat)" >
+                <p mat-line class="chat-title">
+                    <span class="chat-name">
+                        {{userChat.name}}
+                    </span>
+                    <span class="chat-date">
+                        {{currentDate | date: 'dd/MM/yyyy'}}
+                    </span>
+                </p>
+                <p mat-line class="chat-ht">
+                    <!-- {{"testing"}} -->
+                </p>
+                <mat-divider></mat-divider>
+            </mat-list-option>
+        </mat-selection-list>
+    </div> 
+    <div class="messages mat-elevation-z5">
+        <div class="messages-header">
+        <!-- *nfif -->
+        <h2>
+            <!-- {{currentUser.name}} (You) -->
+            <p style="width: 100%;" mat-line class="chat-title">
+                <span class="chat-name">
+                    {{receiver.name}}
+                </span>
+                <!-- <span style="padding-left: 400px;" class="chat-name">
+                    {{currentUser.name}} (You)
+                </span> -->
+            </p>
+        </h2>
+        </div>
+        <ng-template #noMessages>
+            <div class="messages-header"><h2>Messages</h2></div>
+        </ng-template>
+        <mat-divider></mat-divider>
+        <div class="chat-area">
+            <!-- <ng-container *ngIf=""> -->
+           
+                <div *ngFor="let message of userMessages" class="chat-bubble-container">
+                    <div class="chat-bubble">
+                        {{message}}
+                        <span class="chat-date">
+                            {{currentDate | date: 'dd/MM/yyyy'}}
+                        </span>
+                    </div>
+                    
+                </div>
+            <!-- </ng-container> -->
+        </div>
+        <div class="input-area">
+            <mat-form-field  appearance="outline">
+                <input [(ngModel)]="textMessage" matInput placeholder="Jot something down"/>
+                <button mat-icon-button  matSuffix (click)="sendMessage()">
+                    <mat-icon>send</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+    </div> 
+</div>
