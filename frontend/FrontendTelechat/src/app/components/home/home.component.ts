@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, resolveForwardRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatAutocomplete } from '@angular/material/autocomplete'
 import { combineLatest, map, startWith } from 'rxjs';
@@ -52,26 +52,19 @@ export class HomeComponent implements OnInit{
 
   searchControl= new FormControl('');
 
-  // users$=combineLatest([
-  //   this.users,
-  //   this.currentUser,
-  //   this.searchControl.valueChanges.pipe(startWith(''))
-  // ]).pipe(
-  //   map(([this.users,this.currentUser,searchString]))=> this.users.filter(u=>u.displayName?.toLowerCase().includes(searchString.toLowerCase()) && u._id!==this.currUserId)
-  // );
-
   currentDate:Date;
 
   ngOnInit():void{
     this.currentDate=new Date();
-    this.fetchUsers();
+    
     this.http.get('http://localhost:5000/api/user',{
       withCredentials:true
     })
     .subscribe((res:any)=>{
-      this.message=`Hi ${res.name}`;
+      // this.message=`Hi ${res.name}`;
       this.currentUser=res;
       this.currUserId=res._id;
+      this.fetchUsers();
       // console.log("current user is: "+this.currentUser);
       Emitters.authEmitter.emit(true);
     },
@@ -80,9 +73,9 @@ export class HomeComponent implements OnInit{
       Emitters.authEmitter.emit(false);
     }
     );
-    setTimeout(() => {
-      this.removeCurrUser()
-    }, 1000);
+    // setTimeout(() => {
+      
+    // }, 1000);
     // this.removeCurrUser();
 
   }
@@ -96,123 +89,147 @@ export class HomeComponent implements OnInit{
   // }
 
   private fetchUsers(){
-    this.http.get('http://localhost:5000/api/home/users').subscribe((response:any)=>{
-      this.users=response;
-      this.allButCurr=response;
-    },
-    (error)=>{
-      console.error('Error fetching users:',error);
-    });
-  }
-
-  private removeCurrUser(){
-    console.log("curr user removed");
-    const currIndex=this.allButCurr.findIndex(curr=>curr._id===this.currUserId);
-    if(currIndex!==-1){
-      this.allButCurr.splice(currIndex,1);
-    }
-    console.log(this.allButCurr);
-  }
-
-  onOptionSelection(userChat:any){
-    // console.log("we will send msg to:"+userChat._id);
-    this.receiver=userChat;
-    this.updateChatsSent();
-    this.updateChatsReceived(userChat._id);
-    this.chatHistory();
-  }
-
-  updateChatsSent(){
-    this.http.get(`http://localhost:5000/api/home/user/chats/sent?userId=${this.currentUser._id}`).subscribe((response:any)=>{
-      this.currUserSentChats=response;
-      console.log(this.currUserSentChats);
-    },
-    (error)=>{
-      console.error('Error fetching users:',error);
-    });
-  }
-
-  updateChatsReceived(rec_id:string){
-    this.http.get(`http://localhost:5000/api/home/user/chats/sent?userId=${rec_id}`).subscribe((response:any)=>{
-      this.currUserReceivedChats=response;
-      console.log(this.currUserReceivedChats);
-    },
-    (error)=>{
-      console.error('Error fetching users:',error);
-    });
-  }
-
-  chatHistory(){
-    this.completeChatHistory=[...this.currUserSentChats,...this.currUserReceivedChats];
-    // console.log("complete chat"+this.completeChatHistory);
-    // for(let i=0;i<this.currUserSentChats.length;i++){
-    //   console.log("this array contains"+this.currUserSentChats.messages.[0].text);
-    // }
-    for(const chat of this.currUserSentChats){
-      // this.chatHistory.push(chat);
-    }
-  }
-
-  sendMessage(){
-    console.log("hello sendMessage= "+ this.textMessage);
-    // const selectedChatId=this.receiver._id;
-    // if(this.textMessage && selectedChatId){
-
-    // }
-
-    const url='http://localhost:5000/api/home/user/chat';
-    const dataToSend={
-      receiver: this.receiver._id,
-      sender: this.currentUser._id,
-      text: this.textMessage,
-      timestamp: new Date()
-    }
-    // this.userMessages.push(this.textMessage);
-    // console.log(dataToSend.sender);
-    this.http.post(url,dataToSend).subscribe((response:any)=>{
-      //handle res here if needed
-      // this.users=response;
-      // this.allButCurr=response;
-      console.log(response);
-    },
-    (error)=>{
-      console.error('Error sending message:',error);
-    });
-    this.textMessage="";
-  
-    //get all chats on the chat window
-    this.http.get(`http://localhost:5000/api/home/user/chats/sent?userId=${this.currentUser._id}`).subscribe((response:any)=>{
-      this.currUserSentChats=response;
-    },
-    (error)=>{
-      console.error('Error fetching users:',error);
-    });
-    setTimeout(() => {
-      console.log(this.currUserSentChats);
-    }, 1000);
-  }
-
-  onDeleteMessage(messageId:string){
-    // const urlId ='http://localhost:5000/api/home/user/msg/id';
-    // this.http.get(urlId).subscribe((response:any)=>{
-    //   this.messageId=response;
+    // this.http.get('http://localhost:5000/api/home/users').subscribe((response:any)=>{
+    //   this.users=response;
+    //   this.allButCurr=response;
+    //   console.log("the user names are: "+this.users+" okay?");
     // },
     // (error)=>{
-    //   console.error('Error fetching msg id:',error);
+    //   console.error('Error fetching users:',error);
     // });
-    this.chatDivToDeleteId=messageId;
-console.log("deletion initited for id: "+messageId); 
-    const url='http://localhost:5000/api/home/user/msg/delete';
-    this.http.post(url,{messageId}).subscribe((response:any)=>{
-      console.log(response);
-      // this.chatDivToDeleteId=null;
+
+    this.http.get(`http://localhost:5000/api/home/users`+`/`+this.currentUser._id).subscribe((response:any)=>{
+      this.allButCurr=response;
+      console.log(this.allButCurr);
     },
     (error)=>{
-      console.error('Error deleting message:',error);
+      console.error('Error fetching users:',error);
     });
   }
 
-  openInputPopup(messageId:string):void{
+  // private removeCurrUser(){
+  //   console.log("curr user removed");
+  //   const currIndex=this.allButCurr.findIndex(curr=>curr._id===this.currUserId);
+  //   if(currIndex!==-1){
+  //     this.allButCurr.splice(currIndex,1);
+  //   }
+  //   console.log(this.allButCurr);
+  // }
+
+  async onOptionSelection(user:any){
+    console.log("we will send msg to:"+user._id);
+    this.receiver=user;
+    try{
+        await this.updateChatsSent();
+        await this.updateChatsReceived();
+        this.chatHistory();
+    }
+    catch(error){
+      console.log("sync methods: "+error);
+    }
+    
+
+  }
+
+  updateChatsSent():Promise<void>{
+    return new Promise((resolve,reject)=>{
+      this.http.get(`http://localhost:5000/api/home/user/chats/sent/`+this.currentUser._id+`/`+this.receiver._id).subscribe((response:any)=>{
+        this.currUserSentChats=response;
+        console.log("sent chats"+this.currUserSentChats+"okay?");
+        resolve();
+      },
+      (error)=>{
+        console.error('Error fetching users:',error);
+        reject(error);
+      });
+    })
+
+  }
+
+  updateChatsReceived():Promise<void>{
+    return new Promise((resolve,reject)=>{
+      this.http.get(`http://localhost:5000/api/home/user/chats/sent/`+this.receiver._id+`/`+this.currentUser._id).subscribe((response:any)=>{
+        this.currUserReceivedChats=response;
+        console.log("received chats"+this.currUserReceivedChats+"okay?");
+        resolve();
+      },
+      (error)=>{
+        console.error('Error fetching users:',error);
+        reject(error);
+      });
+    });
+  }
+
+chatHistory():void {
+    this.completeChatHistory=this.currUserSentChats.concat(this.currUserReceivedChats).map(doc=>doc);
+    // this.completeChatHistory.forEach(item=>{
+    //   console.log("all msgs are: "+item.message.text+" okay?");
+    // })
+    this.completeChatHistory.sort((a,b)=>{
+      const time1=new Date(a.message.timestamp).getTime();
+      const time2=new Date(b.message.timestamp).getTime();
+      return time1-time2;
+    });
+    console.log("complete chats"+this.completeChatHistory);
+  }
+
+  async sendMessage(){
+    console.log("hello sendMessage= "+ this.textMessage);
+
+
+    try{    
+      console.log('done1');
+      await this.postMessage();
+      console.log('done2');
+      this.onOptionSelection(this.receiver);
+      
+    }
+    catch(error){
+      console.log("sync methods: "+error);
+    }
+  }
+
+  postMessage():Promise<void>{
+    return new Promise((resolve,reject)=>{
+      const url='http://localhost:5000/api/home/user/chat';
+      const dataToSend={
+        receiver: this.receiver._id,
+        sender: this.currentUser._id,
+        text: this.textMessage,
+        timestamp: new Date()
+      }
+      
+      this.http.post(url,dataToSend).subscribe((response:any)=>{
+        console.log(response);
+        this.textMessage="";
+        resolve();
+      },
+      (error)=>{
+        console.error('Error sending message:',error);
+        reject(error);
+      });
+      
+    });
+  }
+
+
+  onDeleteMessage(messageId:string,msgSenderId:string){
+
+    this.chatDivToDeleteId=messageId;
+    if(this.currentUser._id===msgSenderId){
+      console.log("deletion initited for id: "+messageId); 
+      const url='http://localhost:5000/api/home/user/msg/delete';
+      this.http.post(url,{messageId}).subscribe((response:any)=>{
+        console.log(response);
+        // this.chatDivToDeleteId=null;
+      },
+      (error)=>{
+        console.error('Error deleting message:',error);
+      });
+    }
+  }
+
+  openInputPopup(messageId:string){
     const userInput=window.prompt("Enter your text:");
     if(userInput!=null){
       this.onEditMessage(messageId,userInput);

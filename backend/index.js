@@ -16,7 +16,11 @@ app.use(cookieParser());
 
 app.use(express.json());
 app.use("/api",routes);
-mongoose.connect("mongodb://localhost:27017/telechat",{
+// mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+// // 
+// mongoose.connect("mongodb://localhost:27017/telechat",{
+
+mongoose.connect("mongodb://172.17.0.2:27017/telechat",{
     useNewUrlParser:true
 }).then(()=>{
     console.log("connected to database");

@@ -1,6 +1,6 @@
 <div class="container purple-back">
     <div class="chat-list mat-elevation-z5">
-        <div class="search-input" *ngIf="users?.length">
+        <div class="search-input">
             <mat-form-field>
                 <input  matInput 
                 placeholder="Search for users..." 
@@ -40,37 +40,39 @@
         <!-- *nfif -->
         <h2>
             <!-- {{currentUser.name}} (You) -->
-            <p style="width: 100%;" mat-line class="chat-title">
-                <span class="chat-name">
+            <p style="display: flex; justify-content: space-between; width: 700px;" mat-line class="chat-title">
+                <span class="chat-name" style="z-index:1;">
                     {{receiver.name}}
                 </span>
-                <!-- <span style="padding-left: 400px;" class="chat-name">
+                <span style="z-index:2;" class="chat-name">
                     {{currentUser.name}} (You)
-                </span> -->
+                </span>
             </p>
         </h2>
         </div>
-        <ng-template #noMessages>
+        <!-- <ng-template #noMessages>
             <div class="messages-header"><h2>Messages</h2></div>
-        </ng-template>
+        </ng-template> -->
         <mat-divider></mat-divider>
         <div class="chat-area">
             <!-- <ng-container > -->
            
-                <div *ngFor="let sentMsg of completeChatHistory" class="chat-bubble-container" [ngClass]="{'sender': sentMsg.messages[0].sender === currentUser._id}">
-                    <div class="chat-bubble" *ngIf="sentMsg._id!==chatDivToDeleteId" >
-                        {{sentMsg.messages[0].text}}
+                <div *ngFor="let sentMsg of completeChatHistory" class="chat-bubble-container" [ngClass]="{'sender': sentMsg.message.senderId === currentUser._id}">
+                    <div class="chat-bubble" *ngIf="!(sentMsg._id===chatDivToDeleteId && currentUser===sentMsg.message.senderId)" >
+                        
+                        {{sentMsg.message.text}}
                         <span class="chat-date">
                             {{currentDate | date: 'dd/MM/yyyy'}}
                         </span>
                     </div>
                     
-                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon button with a horizontal three dot icon" *ngIf="sentMsg._id!==chatDivToDeleteId">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon button with a horizontal three dot icon" *ngIf="!(sentMsg._id===chatDivToDeleteId && currentUser===sentMsg.message.senderId) "> 
+                        
                         <mat-icon>more_horiz</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
                           <button mat-menu-item (click)="openInputPopup(sentMsg._id)">Edit</button>
-                          <button mat-menu-item (click)="onDeleteMessage(sentMsg._id)">Delete</button>
+                          <button mat-menu-item (click)="onDeleteMessage(sentMsg._id,sentMsg.message.senderId)">Delete</button>
                       </mat-menu>
                 </div>
             <!-- </ng-container> -->

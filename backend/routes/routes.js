@@ -91,10 +91,11 @@ router.get("/user", async (req, res) => {
 });
 
 
-router.get('/home/users', async (req, res) => {
+router.get('/home/users/:value1', async (req, res) => {
+    const currentUserId=req.params.value1;
     console.log("Get req for all user names...");
     try{
-        const users=await User.find({},'name');
+        const users=await User.find({_id:{$ne: currentUserId}}).exec();
         res.json(users);
     }catch(err){
         return res.status(500).send({
@@ -103,14 +104,21 @@ router.get('/home/users', async (req, res) => {
     }
 });
 
-router.get('/home/user/chats/sent', async (req, res) => {
-    const senderId=req.query.userId;
+router.get('/home/user/chats/sent/:value1/:value2', async (req, res) => {
+    const senderId=req.params.value1;
+    const receiverId=req.params.value2;
     console.log("Get msg sent by user"+senderId);
 
     try{    
-        const chats=await Chat.find({'messages.sender': senderId}).exec();
+        // const chats1=await Chat.find({'message.sender': senderId}).exec();
+        // const chats2=await Chat.find({'participants': receiverId}).exec();
+
+        const combinedChats=await Chat.find({ $and: [
+            {'message.senderId': senderId},
+            {'receiverId':receiverId}]}).exec();
+
         // console.log("all chats"+chats);
-        res.status(200).json(chats);
+        res.status(200).json(combinedChats);
     }catch(error){
         res.status(500).json({error:'Internal server error while fetching chats'});
     }
@@ -154,15 +162,16 @@ router.post('/home/user/msg/edit',async(req,res)=>{
         const newMsg=req.body.userInput;
         console.log("editing msg with id="+messageId+" with new msg: "+newMsg);
         const updatedChat=await Chat.findByIdAndUpdate(
-            {_id:'messageId'},
+            // {_id:'messageId'},
+            messageId,
             {
-                $set:{'messages[0].text':newMsg}
+                $set:{'message.text':newMsg}
             },
             {
                 new:true
             }
         );
-        console.log("updated msg");
+        console.log("updated msg: ",updatedChat);
         if (!updatedChat) {
             return res.status(404).json({ error: 'Chat not found' });
         }
@@ -180,7 +189,7 @@ router.post('/logout', (req, res) => {
     }); 
 })
 
-router.get('*',function(){
+router.get('*',function(req,res){
     res.redirect('/');
 });
 
@@ -192,16 +201,18 @@ router.post('/home/user/chat', async(req, res) => {
 
     console.log("id sent is: "+sender);
     const chat=new Chat({
-        participants:[receiver],
-        messages:[
+        receiverId:receiver,
+        message:
         {
-            sender: sender,
+            senderId: sender,
             text: msg,
             timestamp: date
-        }]
+        }
     });
     const result = await chat.save();
-
+    res.send({
+        message:"Success!!"
+    });
 });
 
 
