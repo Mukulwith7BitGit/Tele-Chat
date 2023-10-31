@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, OnInit, ViewChild, resolveForwardRef } from '@angular/core';
+import { AfterViewChecked, Component, OnInit, ViewChild,ElementRef, resolveForwardRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatAutocomplete } from '@angular/material/autocomplete'
 import { combineLatest, map, startWith } from 'rxjs';
@@ -19,9 +19,10 @@ import {MatButtonModule} from '@angular/material/button';
   // imports: [MatButtonModule, MatMenuModule],
 })
 
-export class HomeComponent implements OnInit{
+export class HomeComponent implements OnInit,AfterViewChecked{
 
   @ViewChild(MatMenuTrigger) trigger:MatMenuTrigger;
+  @ViewChild('scrollMe') private myScrollContainer: ElementRef;
 
   openMenu(){
     this.trigger.openMenu();
@@ -73,31 +74,18 @@ export class HomeComponent implements OnInit{
       Emitters.authEmitter.emit(false);
     }
     );
-    // setTimeout(() => {
-      
-    // }, 1000);
-    // this.removeCurrUser();
 
   }
+  ngAfterViewChecked() {        
+    this.scrollToBottom();        
+  } 
 
-  // ngAfterViewInit(){
-  //   console.log("hello from ngafterviewinit");
-  //   // this.removeCurrUser();
-  //       setTimeout(() => {
-  //     this.removeCurrUser()
-  //   }, 100);
-  // }
-
+  scrollToBottom(): void {
+      try {
+          this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+      } catch(err) { }                 
+  }
   private fetchUsers(){
-    // this.http.get('http://localhost:5000/api/home/users').subscribe((response:any)=>{
-    //   this.users=response;
-    //   this.allButCurr=response;
-    //   console.log("the user names are: "+this.users+" okay?");
-    // },
-    // (error)=>{
-    //   console.error('Error fetching users:',error);
-    // });
-
     this.http.get(`http://localhost:5000/api/home/users`+`/`+this.currentUser._id).subscribe((response:any)=>{
       this.allButCurr=response;
       console.log(this.allButCurr);
@@ -107,15 +95,6 @@ export class HomeComponent implements OnInit{
     });
   }
 
-  // private removeCurrUser(){
-  //   console.log("curr user removed");
-  //   const currIndex=this.allButCurr.findIndex(curr=>curr._id===this.currUserId);
-  //   if(currIndex!==-1){
-  //     this.allButCurr.splice(currIndex,1);
-  //   }
-  //   console.log(this.allButCurr);
-  // }
-
   async onOptionSelection(user:any){
     console.log("we will send msg to:"+user._id);
     this.receiver=user;
@@ -123,11 +102,11 @@ export class HomeComponent implements OnInit{
         await this.updateChatsSent();
         await this.updateChatsReceived();
         this.chatHistory();
+        
     }
     catch(error){
       console.log("sync methods: "+error);
     }
-    
 
   }
 
@@ -229,14 +208,24 @@ chatHistory():void {
     }
   }
 
-  openInputPopup(messageId:string){
-    const userInput=window.prompt("Enter your text:");
-    if(userInput!=null){
-      this.onEditMessage(messageId,userInput);
+  async openInputPopup(messageId:string,msgSenderId:string){
+    if(this.currentUser._id===msgSenderId){
+      const userInput=window.prompt("Enter your text:");
+      if(userInput!=null){
+        this.onEditMessage(messageId,userInput);
+      }
+      try{
+        await this.updateChatsSent();
+        await this.updateChatsReceived();
+        this.chatHistory();
+      }
+      catch(error){
+        console.log("sync methods: "+error);
+      }
     }
   }
 
-  onEditMessage(messageId:string,userInput:string){
+   onEditMessage(messageId:string,userInput:string){
     console.log("edit msg initiated for msg id: "+ messageId);
     const url='http://localhost:5000/api/home/user/msg/edit';
     const obj={
@@ -245,6 +234,15 @@ chatHistory():void {
     }
     this.http.post(url,obj).subscribe((response:any)=>{
       console.log(response);
+      try{
+        this.updateChatsSent();
+        this.updateChatsReceived();
+        this.chatHistory();
+      }
+      catch(error){
+        console.log("sync methods: "+error);
+      }
+
     },
     (error)=>{
       console.error('Error editing message:',error);

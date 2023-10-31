@@ -54,11 +54,11 @@
             <div class="messages-header"><h2>Messages</h2></div>
         </ng-template> -->
         <mat-divider></mat-divider>
-        <div class="chat-area">
-            <!-- <ng-container > -->
+        <div class="chat-area " #scrollMe>
+            <!-- <ng-container class="chat-container" #chatContainer> -->
            
-                <div *ngFor="let sentMsg of completeChatHistory" class="chat-bubble-container" [ngClass]="{'sender': sentMsg.message.senderId === currentUser._id}">
-                    <div class="chat-bubble" *ngIf="!(sentMsg._id===chatDivToDeleteId && currentUser===sentMsg.message.senderId)" >
+                <div  *ngFor="let sentMsg of completeChatHistory" class="chat-bubble-container" [ngClass]="{'sender': sentMsg.message.senderId === currentUser._id}">
+                    <div class="chat-bubble" *ngIf="!(sentMsg._id===chatDivToDeleteId && currentUser._id===sentMsg.message.senderId)" >
                         
                         {{sentMsg.message.text}}
                         <span class="chat-date">
@@ -66,12 +66,12 @@
                         </span>
                     </div>
                     
-                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon button with a horizontal three dot icon" *ngIf="!(sentMsg._id===chatDivToDeleteId && currentUser===sentMsg.message.senderId) "> 
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon button with a horizontal three dot icon" *ngIf="!(sentMsg._id===chatDivToDeleteId && currentUser._id===sentMsg.message.senderId) "> 
                         
                         <mat-icon>more_horiz</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
-                          <button mat-menu-item (click)="openInputPopup(sentMsg._id)">Edit</button>
+                          <button mat-menu-item (click)="openInputPopup(sentMsg._id,sentMsg.message.senderId)">Edit</button>
                           <button mat-menu-item (click)="onDeleteMessage(sentMsg._id,sentMsg.message.senderId)">Delete</button>
                       </mat-menu>
                 </div>
