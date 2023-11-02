@@ -37,7 +37,7 @@ router.post('/register', async(req, res) => {
             httpOnly:true, 
             maxAge: 24*60*60*1000
         });
-
+        
         res.send({
             message:"Success!!"
         });
@@ -47,26 +47,36 @@ router.post('/register', async(req, res) => {
 
 
 router.post("/login", async (req, res) => {
-    const user = await User.findOne({contact: req.body.contact});
-    if(!user){ 
-        return res.status(404).send({
-            message: "User not Found!"
+
+    try{
+        const user = await User.findOne({contact: req.body.contact});
+        if(!user){ 
+            return res.status(404).send({
+                message: "User not Found!"
+            });
+        }
+    
+        if(!(await bcrypt.compare(req.body.password, user.password))){ 
+            return res.status(400).send({message: "Password is incorrect"});
+        }
+    
+        const token = jwt.sign({_id:user._id}, "secret")
+        res.cookie("jwt", token,{ 
+            httpOnly:true, 
+            maxAge:24*60*60*1000 // for 1 day
         });
+    
+        res.send({
+            message:"Success!!"
+        });
+
+        // const socket=req.app.get('socketio');
+        // socket.to(user._id).emit('user-logged-in',{user:user});
+    }catch(error){
+        console.error('Error during login: ',error);
+        res.status(500).send({message: 'Internal Server Error'});
     }
 
-    if(!(await bcrypt.compare(req.body.password, user.password))){ 
-        return res.status(400).send({message: "Password is incorrect"});
-    }
-
-    const token = jwt.sign({_id:user._id}, "secret")
-    res.cookie("jwt", token,{ 
-        httpOnly:true, 
-        maxAge:24*60*60*1000 // for 1 day
-    })
-
-    res.send({
-        message:"Success!!"
-    });
 });
 
 router.get("/user", async (req, res) => {
@@ -80,7 +90,7 @@ router.get("/user", async (req, res) => {
         }
         const user = await User.findOne({_id:claims._id});
         const {password,...data} = await user.toJSON();
-        // console.log("current user data : "+data._id);
+        console.log("current user data : "+data._id);
         res.send(data);
 
     }catch(err){
@@ -93,7 +103,7 @@ router.get("/user", async (req, res) => {
 
 router.get('/home/users/:value1', async (req, res) => {
     const currentUserId=req.params.value1;
-    console.log("Get req for all user names...");
+    console.log("Get req for all user names..."+currentUserId);
     try{
         const users=await User.find({_id:{$ne: currentUserId}}).exec();
         res.json(users);
@@ -124,18 +134,6 @@ router.get('/home/user/chats/sent/:value1/:value2', async (req, res) => {
     }
 });
 
-// router.get('/home/user/chats/received', async (req, res) => {
-//     const receiverId=req.query.userId;
-//     console.log("Get msg received from user"+receiverId);
-
-//     try{    
-//         const chats=await Chat.find({'participants[0]': senderId}).exec();
-//         // console.log("all chats"+chats);
-//         res.status(200).json(chats);
-//     }catch(error){
-//         res.status(500).json({error:'Internal server error while fetching chats'});
-//     }
-// });
 
 
 router.post('/home/user/msg/delete',async(req,res)=>{
@@ -154,7 +152,7 @@ router.post('/home/user/msg/delete',async(req,res)=>{
         res.status(500).json({ message: 'Server error' });
     }
 });
-
+    
 router.post('/home/user/msg/edit',async(req,res)=>{
     console.log("editing msg");
     try{
@@ -198,6 +196,7 @@ router.post('/home/user/chat', async(req, res) => {
     let sender=req.body.sender;
     let msg=req.body.text;
     let date=req.body.timestamp;
+    const {message}=req.body;
 
     console.log("id sent is: "+sender);
     const chat=new Chat({
@@ -210,6 +209,7 @@ router.post('/home/user/chat', async(req, res) => {
         }
     });
     const result = await chat.save();
+    // io.emit('message',message);
     res.send({
         message:"Success!!"
     });

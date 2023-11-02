@@ -9,6 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
+// import {SocketIoModule,SocketIoConfig} from 'ngx-socket-io';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -47,6 +48,7 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatMenuModule,
     MatDialogModule,
+    // SocketIoModule.forRoot(config)
     
     CommonModule
   ],

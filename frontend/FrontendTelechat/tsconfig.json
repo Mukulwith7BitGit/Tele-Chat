@@ -20,6 +20,7 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
+    "types":["socket.io-client"],
     "lib": [
       "ES2022",
       "dom"

@@ -44,7 +44,9 @@ export class LoginComponent implements OnInit{
       Swal.fire("Error","Please enter only digits from [0-9] in the contact field!","error");
     }else{
       this.http.post("http://localhost:5000/api/login", user, { withCredentials:true })
-      .subscribe((res) => this.router.navigate(['/home']),(err)=>{
+      .subscribe((res) => 
+      this.router.navigate(['/home'])
+      ,(err)=>{
         Swal.fire("Error", err.error.message, "error");
       })
     }

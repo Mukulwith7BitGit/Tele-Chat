@@ -54,7 +54,7 @@
             <div class="messages-header"><h2>Messages</h2></div>
         </ng-template> -->
         <mat-divider></mat-divider>
-        <div class="chat-area " #scrollMe>
+        <div class="chat-area " #scrollMe [ngStyle]="{'background-image':optionSelected?'none':'url(\'assets/user_images/chatwindow.jpg\')'}">
             <!-- <ng-container class="chat-container" #chatContainer> -->
            
                 <div  *ngFor="let sentMsg of completeChatHistory" class="chat-bubble-container" [ngClass]="{'sender': sentMsg.message.senderId === currentUser._id}">
@@ -71,7 +71,7 @@
                         <mat-icon>more_horiz</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
-                          <button mat-menu-item (click)="openInputPopup(sentMsg._id,sentMsg.message.senderId)">Edit</button>
+                          <button mat-menu-item (click)="openInputPopup(sentMsg._id,sentMsg.message.senderId)" >Edit</button>
                           <button mat-menu-item (click)="onDeleteMessage(sentMsg._id,sentMsg.message.senderId)">Delete</button>
                       </mat-menu>
                 </div>

@@ -7,8 +7,9 @@ import { Emitters } from 'src/app/emitters/emitter';
 import { MatMenuTrigger, matMenuAnimations } from '@angular/material/menu';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
-
- 
+// import * as io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
+import Swal from 'sweetalert2';
 // @ViewChild('users') usersAutocomplete:MatAutocomplete;
 
 @Component({
@@ -20,7 +21,9 @@ import {MatButtonModule} from '@angular/material/button';
 })
 
 export class HomeComponent implements OnInit,AfterViewChecked{
-
+  private socket: Socket;
+  // socket: SocketIOClient.Socket;
+  // io('http://localhost:5000');
   @ViewChild(MatMenuTrigger) trigger:MatMenuTrigger;
   @ViewChild('scrollMe') private myScrollContainer: ElementRef;
 
@@ -35,10 +38,18 @@ export class HomeComponent implements OnInit,AfterViewChecked{
   textMessage: string="";
   showDiv: boolean=true;
   chatDivToDeleteId: string | null=null;
-
+  optionSelected:boolean=false;
   constructor(private http:HttpClient,  
+    // private socket:Socket  
     // private userService: UsersService
-    ){}
+    ){
+      this.socket = io('http://localhost:5000');
+      // this.socket.connect();
+
+      // this.socket.fromEvent('sendMsgEvent').subscribe((message:string)=>{
+      //   // this.
+      // });
+    }
   // messageId:String="";
   users:any[]=[]; 
   userMessages:any[]=[];
@@ -50,14 +61,15 @@ export class HomeComponent implements OnInit,AfterViewChecked{
   currUserReceivedChats:any[]=[];
   completeChatHistory:any[]=[];
   selectedUser:string="";
+  roomNo:string="";
 
   searchControl= new FormControl('');
-
+ 
   currentDate:Date;
 
   ngOnInit():void{
     this.currentDate=new Date();
-    
+
     this.http.get('http://localhost:5000/api/user',{
       withCredentials:true
     })
@@ -75,9 +87,20 @@ export class HomeComponent implements OnInit,AfterViewChecked{
     }
     );
 
+    this.socket.on('sendMsgEvent',(message:string)=>{
+      console.log("!!!!!!!!!!!!!!!!!!!!!!");
+      this.retrieveLiveChat();
+    });
+
   }
   ngAfterViewChecked() {        
+    // this.socket.on('sendMsgEvent',(message:string)=>{
+    //   console.log("event is fired: "+message);
+    //   this.retrieveLiveChat();
+    // });
     this.scrollToBottom();        
+    
+    // this.socket.fromEvent
   } 
 
   scrollToBottom(): void {
@@ -94,10 +117,35 @@ export class HomeComponent implements OnInit,AfterViewChecked{
       console.error('Error fetching users:',error);
     });
   }
-
+async retrieveLiveChat(){
+  console.log("refreshing chat")
+  try{
+    await this.updateChatsSent();
+    await this.updateChatsReceived();
+    this.chatHistory();
+    
+  }
+  catch(error){
+    console.log("sync methods: "+error);
+  }
+}
   async onOptionSelection(user:any){
+    this.optionSelected=true;
     console.log("we will send msg to:"+user._id);
     this.receiver=user;
+
+    let s_id=this.currentUser._id.slice(-3);
+    let r_id=this.receiver._id.slice(-3);
+    let combined_id= parseInt(s_id,10)+parseInt(r_id,10);
+    this.roomNo=""+combined_id;
+    console.log("the room no. is: "+this.roomNo);
+    this.socket.emit('joinRoom',this.roomNo);
+    // this.http.post('http://localhost:5000/api/joinRoom',{roomNo: this.roomNo}).subscribe((response)=>{
+    //   console.log('Joined unique room successfully!');
+    // },(error)=>{
+    //   console.log("Error joining room:",error);
+    // });
+
     try{
         await this.updateChatsSent();
         await this.updateChatsReceived();
@@ -151,11 +199,15 @@ chatHistory():void {
     });
     console.log("complete chats"+this.completeChatHistory);
   }
-
   async sendMessage(){
     console.log("hello sendMessage= "+ this.textMessage);
 
+    // this.socket.emit('sendMsg',this.roomNo);
+    this.socket.emit('sendMsg',{room: 'room-'+this.roomNo,text: this.textMessage});
 
+    // this.socket.fromEvent('sendMsgEvent').subscribe((message:string)=>{
+    //   // this.
+    // });
     try{    
       console.log('done1');
       await this.postMessage();
@@ -166,6 +218,12 @@ chatHistory():void {
     catch(error){
       console.log("sync methods: "+error);
     }
+    // setTimeout(() => {
+    //   this.socket.on('sendMsgEvent',(message:string)=>{
+    //     this.retrieveLiveChat();
+    //   });
+      
+    // }, 1000);
   }
 
   postMessage():Promise<void>{
@@ -180,6 +238,7 @@ chatHistory():void {
       
       this.http.post(url,dataToSend).subscribe((response:any)=>{
         console.log(response);
+        // this.socket.emit('broadcastMessage',this.message);
         this.textMessage="";
         resolve();
       },
@@ -199,12 +258,15 @@ chatHistory():void {
       console.log("deletion initited for id: "+messageId); 
       const url='http://localhost:5000/api/home/user/msg/delete';
       this.http.post(url,{messageId}).subscribe((response:any)=>{
+        this.socket.emit('sendMsg',{room: 'room-'+this.roomNo,text: "deletion done live"});
         console.log(response);
         // this.chatDivToDeleteId=null;
       },
       (error)=>{
         console.error('Error deleting message:',error);
       });
+    }else{
+      Swal.fire("Error","You can delete only your own messages!","error");
     }
   }
 
@@ -222,6 +284,8 @@ chatHistory():void {
       catch(error){
         console.log("sync methods: "+error);
       }
+    }else{
+      Swal.fire("Error","You can edit only your own messages!","error");
     }
   }
 
@@ -234,14 +298,15 @@ chatHistory():void {
     }
     this.http.post(url,obj).subscribe((response:any)=>{
       console.log(response);
-      try{
-        this.updateChatsSent();
-        this.updateChatsReceived();
-        this.chatHistory();
-      }
-      catch(error){
-        console.log("sync methods: "+error);
-      }
+      this.socket.emit('sendMsg',{room: 'room-'+this.roomNo,text: "edit done live"});
+      // try{
+      //   this.updateChatsSent();
+      //   this.updateChatsReceived();
+      //   this.chatHistory();
+      // }
+      // catch(error){
+      //   console.log("sync methods: "+error);
+      // }
 
     },
     (error)=>{
