@@ -33,16 +33,16 @@ git clone https://github.com/Mukulwith7BitGit/Tele-Chat.git
 
 3. Frontend Deployment:
 
-    - cd Tele-Chat/frontend/FrontendTelechat
-    - npm i
-    - npm start
+    ```cd Tele-Chat/frontend/FrontendTelechat```
+    ```npm i```
+    ```npm start```
 
 4. Backend Deployment:
 
-    - cd Tele-Chat/backend
-    - node index.js
+    ```cd Tele-Chat/backend```
+    ```node index.js```
 
-5. Open your browser and navigate to http://localhost:4200 to view the app.
+5. Open your browser and navigate to [Tele-Chat](http://localhost:4200) to view the app.
 
 ## Contributing
 
