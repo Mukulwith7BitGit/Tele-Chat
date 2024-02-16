@@ -84,7 +84,8 @@ io.on('connection',(socket)=>{
 app.use('/api',routes);
 
 
-mongoose.connect("mongodb://172.17.0.2:27017/telechat",{
+// mongoose.connect("mongodb://172.17.0.2:27017/telechat",{
+mongoose.connect("mongodb://127.0.0.1:27017/telechat",{
     useNewUrlParser:true
 }).then(()=>{
     console.log("connected to database");
