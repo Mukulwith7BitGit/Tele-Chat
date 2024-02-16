@@ -1,4 +1,4 @@
-# Tele-Chat App
+# Téle-Chat App
 
 Welcome to the Tele-Chat App repository! This is a simple chat application built using M-E-A-N stack and socket-IO.
 
