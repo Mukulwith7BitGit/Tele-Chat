@@ -33,7 +33,7 @@ git clone https://github.com/Mukulwith7BitGit/Tele-Chat.git
 
 3. Frontend Deployment:
 
-    - ```cd Tele-Chat/frontend/FrontendTelechat```
+    - ```cd Tele-Chat/frontend```
     - ```npm i```
     - ```npm start```
 
