@@ -31,18 +31,12 @@ git clone https://github.com/Mukulwith7BitGit/Tele-Chat.git
     - Search for mongodb port in backend index.js and use the localhost IP.
     - Eg: mongodb://127.0.0.1:27017
 
-3. Frontend Deployment:
+3. Start Project Cmd:
 
-    - ```cd Tele-Chat/frontend```
-    - ```npm i```
+    - ```cd Tele-Chat```
     - ```npm start```
 
-4. Backend Deployment:
-
-    - ```cd Tele-Chat/backend```
-    - ```node index.js```
-
-5. Open your browser and navigate to [Tele-Chat](http://localhost:4200) to view the app.
+4. Open your browser and navigate to [Tele-Chat](http://localhost:4200) to view the app.
 
 ## Téle-Chat Interface
 
