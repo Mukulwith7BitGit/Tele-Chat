@@ -11,7 +11,7 @@ Welcome to the Tele-Chat App repository! This is a simple chat application built
 - Frontend: Angular
 - Backend: Node.js with Express.js
 - Database: MongoDB
-- Deployment:  No specific deployment platform or service used
+- Deployment:  Github Pages
 
 ## Getting Started
 
