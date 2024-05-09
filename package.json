@@ -4,6 +4,12 @@
     "g": "^2.0.1"
   },
   "devDependencies": {
-    "@types/socket.io-client": "^3.0.0"
+    "@types/socket.io-client": "^3.0.0",
+    "concurrently": "^8.2.2"
+  },
+  "scripts": {
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start",
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
   }
 }
