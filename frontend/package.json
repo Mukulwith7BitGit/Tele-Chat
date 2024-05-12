@@ -4,8 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "webpack --config webpack.config.js --no-cache ",
-    "build:begin": "npm i && npm run prebuild && npm run build",
+    "build": "npm i",
+    "build:begin": "webpack --config webpack.config.js --no-cache ",
+    "build:old": "npm i && npm run prebuild && npm run build:begin",
     "prebuild": "npm run clean:dist",
     "clean:dist": "npm run rimraf -- dist",
     "rimraf": "rimraf",
