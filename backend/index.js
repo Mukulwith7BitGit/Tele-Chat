@@ -37,6 +37,7 @@ const io = require('socket.io')(httpServer, {
     cors: { origin: "*" },
     // credentials:true,
 });
+require('dotenv').config(); 
 // io.origins('*:*');
 let uRoomNo="";
 const corsOptions={
@@ -82,14 +83,17 @@ io.on('connection',(socket)=>{
 
 //routes
 app.use('/api',routes);
-
+//5000
+const PORT = process.env.PORT;
+const mongodb_uri = process.env.MONGODB_CONNECTION_STRING;
 
 // mongoose.connect("mongodb://172.17.0.2:27017/telechat",{
-mongoose.connect("mongodb://127.0.0.1:27017/telechat",{
+// mongoose.connect("mongodb://127.0.0.1:27017/telechat",{
+mongoose.connect(mongodb_uri,{
     useNewUrlParser:true
 }).then(()=>{
     console.log("connected to database");
-    httpServer.listen(5000,()=>{
+    httpServer.listen(PORT,()=>{
         console.log('Server is listening on port 5000');
     });
 }).catch((error)=>{
