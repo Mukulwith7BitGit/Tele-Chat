@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-
+// const baseUrl = 'http://localhost:5000';
+const baseUrl = 'https://tele-chat-77dg.onrender.com';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -43,7 +44,7 @@ export class RegisterComponent implements OnInit{
     }else if(!this.ValidateContact(user.contact)){
       Swal.fire("Error","Please enter only digits from [0-9] in the contact field!","error");
     }else{
-      this.http.post("http://localhost:5000/api/register", user, { withCredentials:true })
+      this.http.post(`${baseUrl}/api/register`, user, { withCredentials:true })
       .subscribe(() => this.router.navigate(['/']),(err)=>{
         Swal.fire("Error", err.error.message, "error");
       })

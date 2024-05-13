@@ -1,5 +1,12 @@
 {
     "/echo":{
+        "target": "https://tele-chat-77dg.onrender.com",
+        "secure":true,
+        "changeOrigin":true,
+        "logLevel":"debug"
+
+    },
+    "/local":{
         "target": "http://localhost:5000",
         "secure":true,
         "changeOrigin":true,
