@@ -42,7 +42,7 @@ require('dotenv').config();
 let uRoomNo = "";
 const corsOptions = {
     credentials: true,
-    origin: 'https://tele-chat-77dg.onrender.com',
+    origin: 'http://localhost:4200',
     // credentials:true,
     // methods: ["GET", "POST"],
 }
@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
 
 //routes
 app.use('/api', routes);
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 const mongodb_uri = process.env.MONGODB_CONNECTION_STRING;
 
 // mongoose.connect("mongodb://172.17.0.2:27017/telechat",{
@@ -93,7 +93,7 @@ mongoose.connect(mongodb_uri, {
 }).then(() => {
     console.log("connected to database");
     httpServer.listen(PORT, () => {
-        console.log('Server is listening on port 5000');
+        console.log(`Server is listening on port ${PORT}`);
     });
 }).catch((error) => {
     console.error('Error connecting to the database: ', error);
