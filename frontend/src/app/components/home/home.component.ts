@@ -11,8 +11,6 @@ import {MatButtonModule} from '@angular/material/button';
 import { io, Socket } from 'socket.io-client';
 import Swal from 'sweetalert2';
 // @ViewChild('users') usersAutocomplete:MatAutocomplete;
-// const baseUrl = 'http://localhost:5000';
-const baseUrl = 'https://tele-chat-77dg.onrender.com';
 
 @Component({
   selector: 'app-home',
@@ -45,7 +43,7 @@ export class HomeComponent implements OnInit,AfterViewChecked{
     // private socket:Socket  
     // private userService: UsersService
     ){
-      this.socket = io(baseUrl);
+      this.socket = io('http://localhost:5000');
       // this.socket.connect();
 
       // this.socket.fromEvent('sendMsgEvent').subscribe((message:string)=>{
@@ -72,7 +70,7 @@ export class HomeComponent implements OnInit,AfterViewChecked{
   ngOnInit():void{
     this.currentDate=new Date();
 
-    this.http.get(baseUrl,{
+    this.http.get('http://localhost:5000/api/user',{
       withCredentials:true
     })
     .subscribe((res:any)=>{
@@ -111,7 +109,7 @@ export class HomeComponent implements OnInit,AfterViewChecked{
       } catch(err) { }                 
   }
   private fetchUsers(){
-    this.http.get(`${baseUrl}/api/home/users`+`/`+this.currentUser._id).subscribe((response:any)=>{
+    this.http.get(`http://localhost:5000/api/home/users`+`/`+this.currentUser._id).subscribe((response:any)=>{
       this.allButCurr=response;
       console.log(this.allButCurr);
     },
@@ -162,7 +160,7 @@ async retrieveLiveChat(){
 
   updateChatsSent():Promise<void>{
     return new Promise((resolve,reject)=>{
-      this.http.get(`${baseUrl}/api/home/user/chats/sent/`+this.currentUser._id+`/`+this.receiver._id).subscribe((response:any)=>{
+      this.http.get(`http://localhost:5000/api/home/user/chats/sent/`+this.currentUser._id+`/`+this.receiver._id).subscribe((response:any)=>{
         this.currUserSentChats=response;
         console.log("sent chats"+this.currUserSentChats+"okay?");
         resolve();
@@ -177,7 +175,7 @@ async retrieveLiveChat(){
 
   updateChatsReceived():Promise<void>{
     return new Promise((resolve,reject)=>{
-      this.http.get(`${baseUrl}/api/home/user/chats/sent/`+this.receiver._id+`/`+this.currentUser._id).subscribe((response:any)=>{
+      this.http.get(`http://localhost:5000/api/home/user/chats/sent/`+this.receiver._id+`/`+this.currentUser._id).subscribe((response:any)=>{
         this.currUserReceivedChats=response;
         console.log("received chats"+this.currUserReceivedChats+"okay?");
         resolve();
@@ -230,7 +228,7 @@ chatHistory():void {
 
   postMessage():Promise<void>{
     return new Promise((resolve,reject)=>{
-      const url=`${baseUrl}/api/home/user/chat`;
+      const url='http://localhost:5000/api/home/user/chat';
       const dataToSend={
         receiver: this.receiver._id,
         sender: this.currentUser._id,
@@ -258,7 +256,7 @@ chatHistory():void {
     this.chatDivToDeleteId=messageId;
     if(this.currentUser._id===msgSenderId){
       console.log("deletion initited for id: "+messageId); 
-      const url=`${baseUrl}/api/home/user/msg/delete`;
+      const url='http://localhost:5000/api/home/user/msg/delete';
       this.http.post(url,{messageId}).subscribe((response:any)=>{
         this.socket.emit('sendMsg',{room: 'room-'+this.roomNo,text: "deletion done live"});
         console.log(response);
@@ -293,7 +291,7 @@ chatHistory():void {
 
    onEditMessage(messageId:string,userInput:string){
     console.log("edit msg initiated for msg id: "+ messageId);
-    const url=`${baseUrl}/api/home/user/msg/edit`;
+    const url='http://localhost:5000/api/home/user/msg/edit';
     const obj={
       messageId:messageId,
       userInput:userInput

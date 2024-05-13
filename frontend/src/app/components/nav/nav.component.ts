@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Emitters } from 'src/app/emitters/emitter';
-// const baseUrl = 'http://localhost:5000';
-const baseUrl = 'https://tele-chat-77dg.onrender.com';
+
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -17,7 +16,7 @@ export class NavComponent {
     })
   }
   logout(): void{
-    this.http.post(`${baseUrl}/api/logout`, {}, { withCredentials:true })
+    this.http.post("http://localhost:5000/api/logout", {}, { withCredentials:true })
     .subscribe(() => this.authenticated=false)
   }
 }
