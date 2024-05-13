@@ -42,7 +42,7 @@ require('dotenv').config();
 let uRoomNo="";
 const corsOptions={
     credentials:true,
-    origin: 'http://localhost:4200',
+    origin: 'https://tele-chat-77dg.onrender.com',
     // credentials:true,
     // methods: ["GET", "POST"],
 }
