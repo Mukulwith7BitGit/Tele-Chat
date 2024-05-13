@@ -81,10 +81,10 @@ router.post("/login", async (req, res) => {
 
 router.get("/user", async (req, res) => {
     try{
-        console.log('jjjjjjjjjjjjjjjjjjjjjjjjj1111111',req);
-        console.log('jjjjjjjjjjjjjjjjjjjjj2222',JSON.stringify(req,null,2));
         const cookie = req.cookies['jwt'];
+        console.log('ccccccccccccccccccccc',cookie);
         const claims = jwt.verify(cookie, "secret");
+        console.log('ccccccccllllllllllllllll',claims);
         if(!claims){
             return res.status(401).send({
                 message: "unauthenticated"
