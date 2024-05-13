@@ -42,8 +42,8 @@ require('dotenv').config();
 let uRoomNo = "";
 const corsOptions = {
     credentials: true,
-    // origin: 'http://localhost:4200',
-    origin: 'https://master--wonderful-custard-2dac84.netlify.app',
+    origin: 'http://localhost:4200',
+    // origin: 'https://master--wonderful-custard-2dac84.netlify.app',
     // credentials:true,
     // methods: ["GET", "POST"],
 }

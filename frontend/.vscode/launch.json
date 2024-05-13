@@ -7,8 +7,7 @@
       "type": "chrome",
       "request": "launch",
       "preLaunchTask": "npm: start",
-      "url": "https://master--wonderful-custard-2dac84.netlify.app/"
-      // "url": "http://localhost:4200/"
+      "url": "http://localhost:4200/"
     },
     {
       "name": "ng test",
