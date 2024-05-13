@@ -81,6 +81,8 @@ router.post("/login", async (req, res) => {
 
 router.get("/user", async (req, res) => {
     try{
+        console.log('jjjjjjjjjjjjjjjjjjjjjjjjj1111111',req);
+        console.log('jjjjjjjjjjjjjjjjjjjjj2222',JSON.stringify(req,null,2));
         const cookie = req.cookies['jwt'];
         const claims = jwt.verify(cookie, "secret");
         if(!claims){
