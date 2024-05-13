@@ -83,8 +83,7 @@ io.on('connection',(socket)=>{
 
 //routes
 app.use('/api',routes);
-//5000
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const mongodb_uri = process.env.MONGODB_CONNECTION_STRING;
 
 // mongoose.connect("mongodb://172.17.0.2:27017/telechat",{
